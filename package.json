@@ -30,7 +30,8 @@
   "dependencies": {
     "normalize.css": "^8.0.1",
     "smooth-scrollbar": "^8.4.0",
-    "vue": "^2.6.10"
+    "vue": "^2.6.10",
+    "@blackbp/vue-smooth-scrollbar": "^1.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",

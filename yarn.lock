@@ -667,6 +667,15 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@blackbp/vue-smooth-scrollbar@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@blackbp/vue-smooth-scrollbar/-/vue-smooth-scrollbar-1.0.1.tgz#b0d062e47087de35081c865e476931e3c1989ed9"
+  integrity sha512-1TaKUL35/os5AYgWFxNNB6VK7DG5NMd3Cnq4pme9psii+PKj3F7Kjd02e048+xfD0AjUmo9vArkloV+u1JUiNA==
+  dependencies:
+    normalize.css "^8.0.1"
+    smooth-scrollbar "^8.4.0"
+    vue "^2.6.10"
+
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@intervolga/optimize-cssnano-plugin/-/optimize-cssnano-plugin-1.0.6.tgz#be7c7846128b88f6a9b1d1261a0ad06eb5c0fdf8"
