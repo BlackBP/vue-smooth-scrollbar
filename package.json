@@ -1,0 +1,47 @@
+{
+  "name": "@blackbp/vue-smooth-scrollbar",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/BlackBP/vue-smooth-scrollbar.git",
+  "author": "BlackBP <blackbp9@gmail.com>",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "A wrapper for smooth-scrollbar to Vue Component",
+  "keywords": [
+    "vue",
+    "ui"
+  ],
+  "files": [
+    "src/*",
+    "*.json",
+    "*.js"
+  ],
+  "scripts": {
+    "serve": "vue-cli-service serve src/example/app.js",
+    "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/components.js"
+  },
+  "dependencies": {
+    "smooth-scrollbar": "^8.4.0",
+    "normalize.css": "^8.0.1",
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-service": "^3.4.0",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.1.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
