@@ -3,7 +3,9 @@
          ref="view"
          class="c-scroll-view"
          @mouseenter="focus">
-        <div><slot/></div>
+        <div>
+            <slot/>
+        </div>
     </div>
 </template>
 
