@@ -1,5 +1,5 @@
 # vue-smooth-scrollbar
-A wrapper for [smooth-scrollbar](https://github.com/idiotWu/smooth-scrollbar) to Vue Component.
+[smooth-scrollbar](https://github.com/idiotWu/smooth-scrollbar) for Vue.js projects.
 
 ## Features
 1. Infinite scroll
