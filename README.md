@@ -85,7 +85,7 @@ let status = {
 ```
 
 ## Backlog
-* [x] Plugin structure
+* [ ] Plugin structure
 * [x] Basic implementation
 * [ ] Options
 * [ ] Events
