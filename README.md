@@ -85,8 +85,10 @@ let status = {
 ```
 
 ## To run example
+Clone this repo
 ```
-
+yarn install
+yarn run serve
 ```
 
 ## Backlog
