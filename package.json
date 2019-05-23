@@ -1,10 +1,6 @@
 {
   "name": "@blackbp/vue-smooth-scrollbar",
-  "version": "1.0.1",
-  "main": "./dist/vue-smooth-scroll.umd.js",
-  "browser": {
-    "./sfc": "src/ScrollView.vue"
-  },
+  "version": "1.0.2",
   "repository": "https://github.com/BlackBP/vue-smooth-scrollbar.git",
   "author": "BlackBP <blackbp9@gmail.com>",
   "license": "MIT",
@@ -25,15 +21,19 @@
     "*.json",
     "*.js"
   ],
+  "main": "./dist/vue-smooth-scroll.umd.js",
+  "browser": {
+    "./sfc": "src/ScrollView.vue"
+  },
   "scripts": {
     "serve": "vue-cli-service serve src/example/app.js",
     "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/ScrollView.vue"
   },
   "dependencies": {
+    "@blackbp/vue-smooth-scrollbar": "^1.0.1",
     "normalize.css": "^8.0.1",
     "smooth-scrollbar": "^8.4.0",
-    "vue": "^2.6.10",
-    "@blackbp/vue-smooth-scrollbar": "^1.0.1"
+    "vue": "^2.6.10"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",
