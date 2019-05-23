@@ -14,7 +14,9 @@
   "description": "A wrapper for smooth-scrollbar to Vue Component",
   "keywords": [
     "vue",
-    "ui"
+    "scrollbar",
+    "smooth-scrolling",
+    "custom-scrollbar"
   ],
   "files": [
     "dist/*",
