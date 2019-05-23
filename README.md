@@ -84,6 +84,11 @@ let status = {
 }
 ```
 
+## To run example
+```
+
+```
+
 ## Backlog
 * [ ] Plugin structure
 * [x] Basic implementation

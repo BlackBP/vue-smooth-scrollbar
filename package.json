@@ -11,8 +11,8 @@
   "keywords": [
     "vue",
     "scrollbar",
-    "smooth-scrolling",
-    "custom-scrollbar"
+    "infinite loading",
+    "infinite scroll"
   ],
   "files": [
     "dist/*",
