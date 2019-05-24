@@ -22211,10 +22211,16 @@ function getScrollState(scrollBar) {
 
 
 
+var Event = {
+  loading: 'loading',
+  endY: 'endy',
+  endX: 'endX',
+  scroll: 'scroll'
+};
 /* harmony default export */ var ScrollViewvue_type_script_lang_js_ = ({
   name: "c-scroll-view",
   props: {
-    infiniteScroll: {
+    infiniteLoading: {
       type: Boolean,
       default: false
     },
@@ -22358,7 +22364,7 @@ function getScrollState(scrollBar) {
     update: function update() {
       this.scrollBar.update();
     },
-    // Infinite scroll api methods
+    // Infinite loading api methods
 
     /**
      * Emits loading event
@@ -22377,7 +22383,7 @@ function getScrollState(scrollBar) {
     emitLoad: function emitLoad() {
       var _this3 = this;
 
-      this.$emit('loading', {
+      this.$emit(Event.loading, {
         loaded: function loaded() {
           return _this3.setLoaded();
         },
@@ -22419,7 +22425,7 @@ function getScrollState(scrollBar) {
     /**
      * Resets state
      */
-    resetInfiniteScroll: function resetInfiniteScroll() {
+    resetInfLoad: function resetInfLoad() {
       this.resolve = true;
       this.loading = false;
       this.completed = false;
@@ -22447,7 +22453,7 @@ function getScrollState(scrollBar) {
       _this5.scrollBar = smooth_scrollbar.init(_this5.$refs.view, helpers.defaultsDeep(_this5.options, defaultOptions)); // Add infinite loading listener
 
       _this5.addListener(function (status) {
-        if (!_this5.infiniteScroll) return;
+        if (!_this5.infiniteLoading) return;
         if (_this5.loading || _this5.completed) return;
         var limit = status.limit,
             offset = status.offset;
@@ -22476,24 +22482,24 @@ function getScrollState(scrollBar) {
 
         if (limitY > 0) {
           if (limitY === offsetY) {
-            _this5.$emit('endy');
+            _this5.$emit(Event.endY);
           }
         }
 
         if (limitX > 0) {
           if (limitX === offsetX) {
-            _this5.$emit('endx');
+            _this5.$emit(Event.endX);
           }
         }
 
         _this5.meta.limit = limit;
         _this5.meta.offset = offset;
 
-        _this5.$emit('scroll', status);
+        _this5.$emit(Event.scroll, status);
       }); // Emit initial
 
 
-      if (_this5.infiniteScroll) {
+      if (_this5.infiniteLoading) {
         _this5.emitLoad();
       }
     });

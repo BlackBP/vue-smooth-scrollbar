@@ -6,7 +6,7 @@
             <scroll-view class="app-box__view"
                          :plugins="scrollViewPlugins"
                          :options="scrollViewOpts"
-                         :infinite-scroll="true"
+                         :infinite-loading="true"
                          @loading="onInfinite">
                 <p v-for="item in list"
                    :key="`p-${item.id}`"
@@ -52,7 +52,7 @@
                 loading: false,
                 meta: {
                     page: 0,
-                    total: 4
+                    total: 10
                 }
             }
         },
@@ -101,7 +101,7 @@
                         this.meta.page = ++this.meta.page;
                         this.loading = false;
                         resolve(data)
-                    }, 300)
+                    }, 500)
                 })
             },
         }

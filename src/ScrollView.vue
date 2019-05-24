@@ -4,10 +4,17 @@
     import _ from './helpers';
     import defaultOptions from './defaultOptions';
 
+    const Event = {
+        loading: 'loading',
+        endY: 'endy',
+        endX: 'endX',
+        scroll: 'scroll'
+    };
+
     export default {
         name: "c-scroll-view",
         props: {
-            infiniteScroll: {
+            infiniteLoading: {
                 type: Boolean,
                 default: false
             },
@@ -137,7 +144,7 @@
                 this.scrollBar.update()
             },
 
-            // Infinite scroll api methods
+            // Infinite loading api methods
 
             /**
              * Emits loading event
@@ -155,7 +162,7 @@
              * Emits loading event
              */
             emitLoad() {
-                this.$emit('loading', {
+                this.$emit(Event.loading, {
                     loaded: () => this.setLoaded(),
                     completed: () => this.setCompleted()
                 })
@@ -191,7 +198,7 @@
             /**
              * Resets state
              */
-            resetInfiniteScroll() {
+            resetInfLoad() {
                 this.resolve = true;
                 this.loading = false;
                 this.completed = false;
@@ -220,7 +227,7 @@
 
                 // Add infinite loading listener
                 this.addListener(status => {
-                    if (!this.infiniteScroll) return;
+                    if (!this.infiniteLoading) return;
                     if (this.loading || this.completed) return;
 
                     let {
@@ -255,23 +262,23 @@
 
                     if (limitY > 0) {
                         if (limitY === offsetY) {
-                            this.$emit('endy')
+                            this.$emit(Event.endY)
                         }
                     }
 
                     if (limitX > 0) {
                         if (limitX === offsetX) {
-                            this.$emit('endx')
+                            this.$emit(Event.endX)
                         }
                     }
 
                     this.meta.limit = limit;
                     this.meta.offset = offset;
-                    this.$emit('scroll', status);
+                    this.$emit(Event.scroll, status);
                 });
 
                 // Emit initial
-                if(this.infiniteScroll) {
+                if(this.infiniteLoading) {
                     this.emitLoad();
                 }
             });
