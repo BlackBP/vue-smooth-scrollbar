@@ -1,6 +1,6 @@
 {
   "name": "@blackbp/vue-smooth-scrollbar",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "repository": "https://github.com/BlackBP/vue-smooth-scrollbar.git",
   "author": "BlackBP <blackbp9@gmail.com>",
   "license": "MIT",
@@ -36,9 +36,9 @@
     "vue": "^2.6.10"
   },
   "devDependencies": {
-    "lodash": "^4.17.11",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-service": "^3.4.0",
+    "lodash": "^4.17.11",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.6.10"
