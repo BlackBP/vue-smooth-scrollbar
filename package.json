@@ -27,7 +27,8 @@
   },
   "scripts": {
     "serve": "vue-cli-service serve src/example/app.js",
-    "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/ScrollView.vue"
+    "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/ScrollView.vue",
+    "build-docs": "vue-cli-service build --dest docs src/example/app.js"
   },
   "dependencies": {
     "normalize.css": "^8.0.1",
