@@ -36,6 +36,7 @@
     "vue": "^2.6.10"
   },
   "devDependencies": {
+    "lodash": "^4.17.11",
     "@vue/cli-plugin-babel": "^3.4.0",
     "@vue/cli-service": "^3.4.0",
     "node-sass": "^4.9.0",

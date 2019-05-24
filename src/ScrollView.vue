@@ -1,116 +1,8 @@
 <script>
     import SmoothScrollbar from 'smooth-scrollbar';
 
-    /**
-     * @param {Object} $status - smooth-scrollbar status object
-     */
-    function onInfiniteScroll($status) {
-        if (!this.infiniteScroll) return;
-        if (this.loading || this.completed) return;
-
-        let threshold = this.loadThreshold;
-        let {
-            limit,
-            offset
-        } = $status;
-
-        let loadOffset = limit.y - threshold;
-        let canLoad = offset.y >= loadOffset;
-
-        this.resolve = canLoad;
-
-        if (!this.completed) {
-            if (canLoad) {
-                this.emitLoad(true);
-            }
-        } else {
-            this.loading = false
-        }
-    }
-
-    /**
-     * @param {Object} $status - smooth-scrollbar status object
-     */
-    function onScroll($status) {
-        let {
-            limit,
-            offset
-        } = $status;
-
-        let limitX = limit.x;
-        let limitY = limit.y;
-
-        let offsetX = offset.x;
-        let offsetY = offset.y;
-
-        if (limitY > 0) {
-            if (limitY === offsetY) {
-                this.$emit('endy')
-            }
-        }
-
-        if (limitX > 0) {
-            if (limitX === offsetX) {
-                this.$emit('endx')
-            }
-        }
-
-        this.$emit('scroll', $status);
-    }
-
-    /**
-     *
-     * @param {Function} callback
-     * @param {Number} delay - in milliseconds
-     * @return {Function}
-     */
-    function debounce(callback, delay) {
-
-        let timer = null;
-
-        return function (...args) {
-            const onComplete = () => {
-                callback.apply(this, args);
-                timer = null;
-            };
-
-            if (timer) {
-                clearTimeout(timer);
-            }
-
-            timer = setTimeout(onComplete, delay);
-        };
-    }
-
-    /**
-     *
-     * @param opts
-     * @param defaultOpts
-     * @return {{}}
-     */
-    function mergeOptions(opts = {}, defaultOpts = {}) {
-        if (typeof opts !== 'object') return {};
-        if (Array.isArray(opts)) return {};
-
-        let keys = Object.keys(defaultOpts);
-        let mergedOpts = {};
-
-        keys.forEach(key => {
-            mergedOpts[key] = opts.hasOwnProperty(key) ? opts[key] : defaultOpts[key]
-        });
-
-        return mergedOpts;
-    }
-
-    const defaultOptions = {
-        damping: 0.1,
-        thumbMinSize: 20,
-        renderByPixels: true,
-        alwaysShowTracks: false,
-        continuousScrolling: true,
-        delegateTo: null,
-        plugins: {},
-    };
+    import _ from './helpers';
+    import defaultOptions from './defaultOptions';
 
     export default {
         name: "c-scroll-view",
@@ -138,12 +30,16 @@
                 loading: false,
                 completed: false,
                 scrollBar: null,
-                listeners: []
+                listeners: [],
+                meta: {
+                    limit: {},
+                    offset: {}
+                }
             }
         },
         computed: {
             hasPlugins() {
-                if(Array.isArray(this.plugins)) {
+                if(_.isArray(this.plugins)) {
                     return !!this.plugins.length
                 } else {
                     return false
@@ -151,6 +47,21 @@
             }
         },
         methods: {
+            /**
+             * @param {String} axis - x or y axis
+             * @return {Object}
+             */
+            getLimit(axis = '') {
+                return _.getScrollState(this.scrollBar, axis, 'limit')
+            },
+
+            /**
+             * @param {String} axis - x or y axis
+             * @return {Object}
+             */
+            getOffset(axis = '') {
+                return _.getScrollState(this.scrollBar, axis, 'offset')
+            },
 
             // Smooth-scrollbar api methods
             /**
@@ -231,17 +142,24 @@
             /**
              * Emits loading event
              */
-            emitLoad: debounce(function () {
+            debounceLoad: _.debounce(function () {
                 if (this.resolve) {
                     this.resolve = false;
                     this.loading = true;
 
-                    this.$emit('loading', {
-                        loaded: () => this.setLoaded(),
-                        completed: () => this.setCompleted()
-                    })
+                    this.emitLoad()
                 }
             }, 300),
+
+            /**
+             * Emits loading event
+             */
+            emitLoad() {
+                this.$emit('loading', {
+                    loaded: () => this.setLoaded(),
+                    completed: () => this.setCompleted()
+                })
+            },
 
             /**
              * Sets loaded state
@@ -250,6 +168,15 @@
                 this.resolve = true;
                 this.loading = false;
                 this.completed = false;
+
+                this.$nextTick(() => {
+                    let limitY = this.getLimit('y');
+                    let offsetY = this.getOffset('y');
+
+                    if(_.checkLoadCapability(limitY, offsetY, this.loadThreshold)) {
+                        this.emitLoad();
+                    }
+                })
             },
 
             /**
@@ -280,16 +207,73 @@
         },
         mounted() {
             this.$nextTick(() => {
+
+                // Use plugins
                 if(this.hasPlugins) {
                     this.plugins.forEach(plugin => {
                         SmoothScrollbar.use(plugin)
                     });
                 }
 
-                this.scrollBar = SmoothScrollbar.init(this.$refs.view, mergeOptions(this.options, defaultOptions));
+                // Init
+                this.scrollBar = SmoothScrollbar.init(this.$refs.view, _.defaultsDeep(this.options, defaultOptions));
 
-                this.addListener(onInfiniteScroll.bind(this));
-                this.addListener(onScroll.bind(this));
+                // Add infinite loading listener
+                this.addListener(status => {
+                    if (!this.infiniteScroll) return;
+                    if (this.loading || this.completed) return;
+
+                    let {
+                        limit,
+                        offset
+                    } = status;
+
+                    let canLoad = _.checkLoadCapability(limit.y, offset.y, this.loadThreshold);
+                    this.resolve = canLoad;
+
+                    if (!this.completed) {
+                        if (canLoad) {
+                            this.debounceLoad(true);
+                        }
+                    } else {
+                        this.loading = false
+                    }
+                });
+
+                // Add scroll listener
+                this.addListener(status => {
+                    let {
+                        limit,
+                        offset
+                    } = status;
+
+                    let limitX = limit.x;
+                    let limitY = limit.y;
+
+                    let offsetX = offset.x;
+                    let offsetY = offset.y;
+
+                    if (limitY > 0) {
+                        if (limitY === offsetY) {
+                            this.$emit('endy')
+                        }
+                    }
+
+                    if (limitX > 0) {
+                        if (limitX === offsetX) {
+                            this.$emit('endx')
+                        }
+                    }
+
+                    this.meta.limit = limit;
+                    this.meta.offset = offset;
+                    this.$emit('scroll', status);
+                });
+
+                // Emit initial
+                if(this.infiniteScroll) {
+                    this.emitLoad();
+                }
             });
         },
         beforeDestroy() {
@@ -299,7 +283,7 @@
             }
         },
         updated() {
-            this.scrollBar && this.update()
+            this.scrollBar && this.scrollBar.update()
         },
         render(h) {
             let containerData = {
@@ -312,13 +296,19 @@
                     mouseenter: this.focus
                 },
                 style: {
-                    display: 'block',
-                    height: '100%'
+                    display: 'block'
                 }
             };
 
             return h('div', containerData, [
-                h('div', this.$slots.default)
+                h('div', {
+                    class: 'c-scroll-view__content',
+                    style: {
+                        position: 'relative',
+                        display: 'block',
+                        height: 'auto',
+                    }
+                }, this.$slots.default)
             ])
         }
     }

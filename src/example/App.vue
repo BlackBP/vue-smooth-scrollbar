@@ -1,21 +1,25 @@
 <template>
     <div class="app-wrap">
 
-        <div class="app-view">
+        <div class="app-box">
 
-            <scroll-view :plugins="scrollViewPlugins"
+            <scroll-view class="app-box__view"
+                         :plugins="scrollViewPlugins"
                          :options="scrollViewOpts"
                          :infinite-scroll="true"
                          @loading="onInfinite">
-                <div class="app-view__content">
-                    <p v-for="item in list"
-                       :key="`p-${item.id}`">
-                        <b>{{ item.id }}.</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aperiam architecto dolorem doloremque ea harum incidunt ipsa itaque
-                        iure minima modi mollitia nesciunt, numquam officia omnis quia, repellendus sunt, vel.
-                    </p>
-                    <div><b>Page</b>: {{ meta.page }} of {{ meta.total }}</div>
-                </div>
+                <p v-for="item in list"
+                   :key="`p-${item.id}`"
+                   style="margin-top: 0;">
+                    <b>{{ item.id }}.</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aperiam architecto dolorem doloremque ea
+                    harum incidunt ipsa itaque
+                    iure minima modi mollitia nesciunt, numquam officia omnis quia, repellendus sunt, vel.
+                </p>
             </scroll-view>
+
+            <div class="app-box__meta">
+                <b>Page</b>: {{ meta.page }} of {{ meta.total }}
+            </div>
 
             <transition name="transition-fade-in">
                 <div v-show="loading"
@@ -48,7 +52,7 @@
                 loading: false,
                 meta: {
                     page: 0,
-                    total: 5
+                    total: 4
                 }
             }
         },
@@ -56,8 +60,7 @@
             scrollViewOpts() {
                 return {
                     damping: 0.25,
-                    alwaysShowTracks: true,
-                    continuousScrolling: true
+                    alwaysShowTracks: true
                 }
             },
             scrollViewPlugins() {
@@ -70,7 +73,7 @@
                     let response = await this.getData();
                     this.list = [...this.list, ...response];
 
-                    if(this.meta.page < this.meta.total) {
+                    if (this.meta.page < this.meta.total) {
                         this.$nextTick(() => $state.loaded())
                     } else {
                         this.$nextTick(() => $state.completed())
@@ -98,13 +101,9 @@
                         this.meta.page = ++this.meta.page;
                         this.loading = false;
                         resolve(data)
-                    }, 1000)
+                    }, 300)
                 })
             },
-        },
-        async mounted() {
-            let response = await this.getData();
-            this.list = [...this.list, ...response];
         }
     }
 </script>
@@ -113,6 +112,55 @@
     @import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
     @import "~normalize.css/normalize.css";
 
+    // Media queries
+    @mixin media( $breakpoints ) {
+        @each $breakpoint in $breakpoints {
+
+            @if $breakpoint == xs-s {
+                @media screen and (max-width: 320px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == xs-m {
+                @media screen and (min-width: 321px) and (max-width: 375px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == xs-l {
+                @media screen and (min-width: 376px) and (max-width: 425px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == xs {
+                @media screen and (max-width: 575px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == sm {
+                @media screen and (min-width: 576px) and (max-width: 767px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == md {
+                @media screen and (min-width: 768px) and (max-width: 991px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == lg {
+                @media screen and (min-width: 992px) and (max-width: 1199px) {
+                    @content;
+                }
+            }
+            @if $breakpoint == xl {
+                @media screen and (min-width: 1200px) {
+                    @content;
+                }
+            }
+
+        }
+    }
+
+    // Loader spin animation
     @keyframes loaderSpin {
         0% {
             transform: rotate(0deg);
@@ -172,22 +220,22 @@
         padding: 15px;
     }
 
-    .app-view {
+    .app-box {
         $self: #{&};
-        $content: #{$self}__content;
+        $view: #{$self}__view;
+        $meta: #{$self}__meta;
 
-        $size: 50%;
+        $box-padding: 15px;
 
         @at-root {
             #{$self} {
                 position: relative;
-                flex: 1 1 $size;
-                display: block;
+                display: flex;
+                flex-flow: column nowrap;
                 width: 100%;
-                max-width: $size;
                 height: 100%;
-                max-height: $size;
                 margin: auto;
+                padding: $box-padding;
                 background-color: #ffffff;
                 border-radius: $g-border-radius;
                 overflow: hidden;
@@ -196,8 +244,16 @@
                 0 1px 18px 0 rgba(#000, 0.09);
             }
 
-            #{$content} {
-                padding: 15px;
+            #{$view} {
+                height: 100%;
+            }
+
+            #{$meta} {
+                flex: 0 0 auto;
+                background: #fff;
+                padding-top: 15px;
+                border-top: 1px solid #ddd;
+                margin-top: $box-padding;
             }
         }
     }
@@ -294,6 +350,11 @@
                 margin-left: 0.5em;
                 font-weight: bold;
                 font-size: 1em;
+            }
+
+            // Media queries
+            @include media(xl lg) {
+
             }
         }
     }
