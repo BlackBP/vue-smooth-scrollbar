@@ -4,6 +4,9 @@
 ## Features
 1. Infinite scroll
 
+## Demo
+[GitHub Pages](https://blackbp.github.io/vue-smooth-scrollbar/)
+
 ## Usage
 
 ### 1. Install dependency
