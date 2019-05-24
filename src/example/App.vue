@@ -3,14 +3,17 @@
 
         <div class="app-view">
 
-            <scroll-view :infinite-scroll="true"
-                         @infinite="onInfinite">
+            <scroll-view :plugins="scrollViewPlugins"
+                         :options="scrollViewOpts"
+                         :infinite-scroll="true"
+                         @loading="onInfinite">
                 <div class="app-view__content">
                     <p v-for="item in list"
                        :key="`p-${item.id}`">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aperiam architecto dolorem doloremque ea harum incidunt ipsa itaque
+                        <b>{{ item.id }}.</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aperiam architecto dolorem doloremque ea harum incidunt ipsa itaque
                         iure minima modi mollitia nesciunt, numquam officia omnis quia, repellendus sunt, vel.
                     </p>
+                    <div><b>Page</b>: {{ meta.page }} of {{ meta.total }}</div>
                 </div>
             </scroll-view>
 
@@ -30,6 +33,8 @@
 </template>
 
 <script>
+    import OverScrollPlugin from 'smooth-scrollbar/plugins/overscroll';
+
     import ScrollView from '../ScrollView';
 
     export default {
@@ -40,7 +45,23 @@
         data() {
             return {
                 list: [],
-                loading: false
+                loading: false,
+                meta: {
+                    page: 0,
+                    total: 5
+                }
+            }
+        },
+        computed: {
+            scrollViewOpts() {
+                return {
+                    damping: 0.25,
+                    alwaysShowTracks: true,
+                    continuousScrolling: true
+                }
+            },
+            scrollViewPlugins() {
+                return [OverScrollPlugin]
             }
         },
         methods: {
@@ -48,7 +69,12 @@
                 try {
                     let response = await this.getData();
                     this.list = [...this.list, ...response];
-                    this.$nextTick(() => $state.loaded())
+
+                    if(this.meta.page < this.meta.total) {
+                        this.$nextTick(() => $state.loaded())
+                    } else {
+                        this.$nextTick(() => $state.completed())
+                    }
                 } catch (errors) {
                     $state.completed();
                     console.error(errors);
@@ -62,12 +88,14 @@
                     setTimeout(() => {
                         let lastItemId = this.list.length;
                         let data = [...Array(10)];
+
                         data = data.map((item, index) => {
                             return {
                                 id: lastItemId + ++index
                             }
                         });
 
+                        this.meta.page = ++this.meta.page;
                         this.loading = false;
                         resolve(data)
                     }, 1000)

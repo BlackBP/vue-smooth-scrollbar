@@ -1,25 +1,14 @@
-<template>
-    <div data-scrollbar
-         ref="view"
-         class="c-scroll-view"
-         @mouseenter="focus">
-        <div>
-            <slot/>
-        </div>
-    </div>
-</template>
-
 <script>
     import SmoothScrollbar from 'smooth-scrollbar';
-    import OverScrollPlugin from 'smooth-scrollbar/plugins/overscroll';
 
-    SmoothScrollbar.use(OverScrollPlugin);
+    /**
+     * @param {Object} $status - smooth-scrollbar status object
+     */
+    function onInfiniteScroll($status) {
+        if (!this.infiniteScroll) return;
+        if (this.loading || this.completed) return;
 
-    function onInfiniteScroll($status, $vue) {
-        if (!$vue.infiniteScroll) return;
-        if ($vue.loading || $vue.completed) return;
-
-        let threshold = $vue.loadThreshold;
+        let threshold = this.loadThreshold;
         let {
             limit,
             offset
@@ -28,18 +17,21 @@
         let loadOffset = limit.y - threshold;
         let canLoad = offset.y >= loadOffset;
 
-        $vue.resolve = canLoad;
+        this.resolve = canLoad;
 
-        if (!$vue.completed) {
+        if (!this.completed) {
             if (canLoad) {
-                $vue.emitLoad(true);
+                this.emitLoad(true);
             }
         } else {
-            $vue.loading = false
+            this.loading = false
         }
     }
 
-    function onScroll($status, $vue) {
+    /**
+     * @param {Object} $status - smooth-scrollbar status object
+     */
+    function onScroll($status) {
         let {
             limit,
             offset
@@ -53,26 +45,32 @@
 
         if (limitY > 0) {
             if (limitY === offsetY) {
-                $vue.$emit('endy')
+                this.$emit('endy')
             }
         }
 
         if (limitX > 0) {
             if (limitX === offsetX) {
-                $vue.$emit('endx')
+                this.$emit('endx')
             }
         }
 
-        $vue.$emit('scroll', $status);
+        this.$emit('scroll', $status);
     }
 
-    function debounce(f, ms) {
+    /**
+     *
+     * @param {Function} callback
+     * @param {Number} delay - in milliseconds
+     * @return {Function}
+     */
+    function debounce(callback, delay) {
 
         let timer = null;
 
         return function (...args) {
             const onComplete = () => {
-                f.apply(this, args);
+                callback.apply(this, args);
                 timer = null;
             };
 
@@ -80,22 +78,58 @@
                 clearTimeout(timer);
             }
 
-            timer = setTimeout(onComplete, ms);
+            timer = setTimeout(onComplete, delay);
         };
     }
+
+    /**
+     *
+     * @param opts
+     * @param defaultOpts
+     * @return {{}}
+     */
+    function mergeOptions(opts = {}, defaultOpts = {}) {
+        if (typeof opts !== 'object') return {};
+        if (Array.isArray(opts)) return {};
+
+        let keys = Object.keys(defaultOpts);
+        let mergedOpts = {};
+
+        keys.forEach(key => {
+            mergedOpts[key] = opts.hasOwnProperty(key) ? opts[key] : defaultOpts[key]
+        });
+
+        return mergedOpts;
+    }
+
+    const defaultOptions = {
+        damping: 0.1,
+        thumbMinSize: 20,
+        renderByPixels: true,
+        alwaysShowTracks: false,
+        continuousScrolling: true,
+        delegateTo: null,
+        plugins: {},
+    };
 
     export default {
         name: "c-scroll-view",
         props: {
             infiniteScroll: {
                 type: Boolean,
-                default: false,
-                required: false
+                default: false
             },
             loadThreshold: {
                 type: Number,
-                default: 50,
-                required: false
+                default: 50
+            },
+            options: {
+                type: Object,
+                default: () => ({})
+            },
+            plugins: {
+                type: Array,
+                default: () => ([])
             }
         },
         data() {
@@ -103,35 +137,133 @@
                 resolve: true,
                 loading: false,
                 completed: false,
-                renderCount: 0,
-                scrollBar: null
+                scrollBar: null,
+                listeners: []
+            }
+        },
+        computed: {
+            hasPlugins() {
+                if(Array.isArray(this.plugins)) {
+                    return !!this.plugins.length
+                } else {
+                    return false
+                }
             }
         },
         methods: {
-            scrollTo(x = 0, y = 0) {
-                this.scrollBar.scrollTo(x, y, 300)
+
+            // Smooth-scrollbar api methods
+            /**
+             *
+             * @param {Number} x
+             * @param {Number} y
+             * @param {Number} duration
+             * @param {Object} options
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbarscrollto
+             */
+            scrollTo(x = 0, y = 0, duration = 300, options = {}) {
+                this.scrollBar.scrollTo(x, y, duration, options)
             },
+
+            /**
+             *
+             * @param {HTMLElement} elem
+             * @param {Object} [options]
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbarscrollintoview
+             */
+            scrollIntoView(elem, options = {}) {
+                this.scrollBar.scrollIntoView(elem, options)
+            },
+
+            /**
+             *
+             * @param {HTMLElement} elem
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbarisvisible
+             */
+            isVisible(elem) {
+                this.scrollBar.isVisible(elem);
+            },
+
+            /**
+             *
+             * @param {Function} listener
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbaraddlistener
+             */
+            addListener(listener) {
+                this.listeners.push(listener);
+                this.scrollBar.addListener(listener)
+            },
+
+            /**
+             *
+             * @param {Function} listener
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbarremovelistener
+             */
+            removeListener(listener) {
+                this.listeners = this.listeners.filter(attached => {
+                    if (attached === listener) {
+                        this.scrollBar.removeListener(listener)
+                    }
+
+                    return attached !== listener
+                });
+            },
+
+            /**
+             *
+             */
+            removeAllListeners() {
+                this.listeners.forEach(listener => {
+                    this.scrollBar.removeListener(listener)
+                });
+                this.listeners = [];
+            },
+
+            /**
+             * @see https://github.com/idiotWu/smooth-scrollbar/blob/develop/docs/api.md#scrollbarupdate
+             */
+            update() {
+                this.scrollBar.update()
+            },
+
+            // Infinite scroll api methods
+
+            /**
+             * Emits loading event
+             */
             emitLoad: debounce(function () {
                 if (this.resolve) {
                     this.resolve = false;
                     this.loading = true;
 
-                    this.$emit('infinite', {
+                    this.$emit('loading', {
                         loaded: () => this.setLoaded(),
                         completed: () => this.setCompleted()
                     })
                 }
             }, 300),
+
+            /**
+             * Sets loaded state
+             */
             setLoaded() {
                 this.resolve = true;
                 this.loading = false;
                 this.completed = false;
             },
+
+            /**
+             * Sets completed state
+             */
             setCompleted() {
                 this.resolve = false;
                 this.loading = false;
                 this.completed = true;
             },
+
+            /**
+             * Resets state
+             */
             resetInfiniteScroll() {
                 this.resolve = true;
                 this.loading = false;
@@ -141,36 +273,53 @@
             // Misc
             focus() {
                 this.scrollBar.containerEl.focus()
+            },
+            blur() {
+                this.scrollBar.containerEl.blur()
             }
         },
         mounted() {
             this.$nextTick(() => {
-                this.scrollBar = SmoothScrollbar.init(this.$refs.view, {
-                    damping: 0.25,
-                    alwaysShowTracks: true,
-                    continuousScrolling: true
-                });
+                if(this.hasPlugins) {
+                    this.plugins.forEach(plugin => {
+                        SmoothScrollbar.use(plugin)
+                    });
+                }
 
-                this.scrollBar.addListener(status => onInfiniteScroll(status, this));
-                this.scrollBar.addListener(status => onScroll(status, this));
+                this.scrollBar = SmoothScrollbar.init(this.$refs.view, mergeOptions(this.options, defaultOptions));
+
+                this.addListener(onInfiniteScroll.bind(this));
+                this.addListener(onScroll.bind(this));
             });
         },
         beforeDestroy() {
             if (this.scrollBar !== null) {
-                this.scrollBar.removeListener(status => onInfiniteScroll(status, this));
-                this.scrollBar.removeListener(status => onScroll(status, this));
+                this.removeAllListeners();
                 this.scrollBar.destroy();
             }
         },
         updated() {
-            this.scrollBar && this.scrollBar.update()
+            this.scrollBar && this.update()
+        },
+        render(h) {
+            let containerData = {
+                class: 'c-scroll-view',
+                ref: 'view',
+                attrs: {
+                    'data-scrollbar': ''
+                },
+                on: {
+                    mouseenter: this.focus
+                },
+                style: {
+                    display: 'block',
+                    height: '100%'
+                }
+            };
+
+            return h('div', containerData, [
+                h('div', this.$slots.default)
+            ])
         }
     }
 </script>
-
-<style>
-    .c-scroll-view {
-        display: block;
-        height: 100%;
-    }
-</style>

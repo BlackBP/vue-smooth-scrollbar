@@ -1,5 +1,5 @@
 # vue-smooth-scrollbar
-[smooth-scrollbar](https://github.com/idiotWu/smooth-scrollbar) for Vue.js projects.
+[idiotWu/smooth-scrollbar](https://github.com/idiotWu/smooth-scrollbar) for Vue.js projects.
 
 ## Features
 1. Infinite scroll
@@ -92,11 +92,11 @@ yarn run serve
 ```
 
 ## Backlog
-* [ ] Plugin structure
+* [x] Plugin structure
 * [x] Basic implementation
-* [ ] Options
-* [ ] Events
-* [ ] Methods
+* [x] Options
+* [x] Events
+* [x] Methods
 * [ ] Styling
-* [ ] Build dist
+* [x] Build dist
 * [ ] SSR / nuxt
