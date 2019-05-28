@@ -1,19 +1,18 @@
 {
   "name": "@blackbp/vue-smooth-scrollbar",
   "version": "1.0.5",
-  "repository": "https://github.com/BlackBP/vue-smooth-scrollbar.git",
-  "author": "BlackBP <blackbp9@gmail.com>",
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "description": "A wrapper for smooth-scrollbar to Vue Component",
-  "keywords": [
-    "vue",
-    "scrollbar",
-    "infinite loading",
-    "infinite scroll"
-  ],
+  "author": "BlackBP <blackbp9@gmail.com>",
+  "scripts": {
+    "serve": "vue-cli-service serve src/example/app.js",
+    "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/ScrollView.vue",
+    "lint": "vue-cli-service lint",
+    "build-exmaple": "vue-cli-service build --dest docs src/example/app.js"
+  },
+  "main": "./dist/vue-smooth-scroll.umd.js",
+  "browser": {
+    "./sfc": "src/ScrollView.vue"
+  },
   "files": [
     "dist/*",
     "src/*",
@@ -21,15 +20,6 @@
     "*.json",
     "*.js"
   ],
-  "main": "./dist/vue-smooth-scroll.umd.js",
-  "browser": {
-    "./sfc": "src/ScrollView.vue"
-  },
-  "scripts": {
-    "serve": "vue-cli-service serve src/example/app.js",
-    "build": "vue-cli-service build --target lib --name vue-smooth-scroll src/ScrollView.vue",
-    "build-exmaple": "vue-cli-service build --dest docs src/example/app.js"
-  },
   "dependencies": {
     "normalize.css": "^8.0.1",
     "smooth-scrollbar": "^8.4.0",
@@ -37,7 +27,12 @@
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",
+    "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.4.0",
+    "@vue/eslint-config-standard": "^4.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.0.0",
     "lodash": "^4.17.11",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
@@ -52,5 +47,16 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "keywords": [
+    "vue",
+    "scrollbar",
+    "infinite loading",
+    "infinite scroll"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "https://github.com/BlackBP/vue-smooth-scrollbar.git"
 }

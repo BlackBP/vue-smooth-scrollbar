@@ -1,19 +1,19 @@
 import {
-    get,
-    defaultsDeep,
-    debounce,
-    isNaN,
-    isArray,
-    isEmpty
+  get,
+  defaultsDeep,
+  debounce,
+  isNaN,
+  isArray,
+  isEmpty
 } from 'lodash'
 
 /**
  * @param {Number} value
  * @param {Number} defValue
  */
-export function checkNumber(value = 0, defValue = 0) {
-    value = +value;
-    return isNaN(value) ? defValue : value;
+export function checkNumber (value = 0, defValue = 0) {
+  value = +value
+  return isNaN(value) ? defValue : value
 }
 
 /**
@@ -21,12 +21,12 @@ export function checkNumber(value = 0, defValue = 0) {
  * @param {Number} offsetY
  * @param {Number} loadThreshold
  */
-export function checkLoadCapability(limitY = 0, offsetY = 0, loadThreshold = 0) {
-    limitY = checkNumber(limitY);
-    offsetY = checkNumber(offsetY);
-    loadThreshold = checkNumber(loadThreshold);
+export function checkLoadCapability (limitY = 0, offsetY = 0, loadThreshold = 0) {
+  limitY = checkNumber(limitY)
+  offsetY = checkNumber(offsetY)
+  loadThreshold = checkNumber(loadThreshold)
 
-    return offsetY >= limitY - loadThreshold;
+  return offsetY >= limitY - loadThreshold
 }
 
 /**
@@ -36,27 +36,27 @@ export function checkLoadCapability(limitY = 0, offsetY = 0, loadThreshold = 0) 
  * @param prop
  * @return {*}
  */
-export function getScrollState(scrollBar, axis = '', prop = '') {
-    let state = get(scrollBar, prop, {});
+export function getScrollState (scrollBar, axis = '', prop = '') {
+  let state = get(scrollBar, prop, {})
 
-    switch (axis) {
-        case "x":
-        case "y":
-            return get(state, axis);
+  switch (axis) {
+    case 'x':
+    case 'y':
+      return get(state, axis)
 
-        default:
-            return state
-    }
+    default:
+      return state
+  }
 }
 
 export default {
-    checkNumber,
-    checkLoadCapability,
-    debounce,
-    defaultsDeep,
-    get,
-    getScrollState,
-    isArray,
-    isEmpty,
-    isNaN
+  checkNumber,
+  checkLoadCapability,
+  debounce,
+  defaultsDeep,
+  get,
+  getScrollState,
+  isArray,
+  isEmpty,
+  isNaN
 }

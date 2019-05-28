@@ -37,75 +37,75 @@
 </template>
 
 <script>
-    import OverScrollPlugin from 'smooth-scrollbar/plugins/overscroll';
+import OverScrollPlugin from 'smooth-scrollbar/plugins/overscroll'
 
-    import ScrollView from '../ScrollView';
+import ScrollView from '../ScrollView'
 
-    export default {
-        name: "App",
-        components: {
-            ScrollView
-        },
-        data() {
-            return {
-                list: [],
-                loading: false,
-                meta: {
-                    page: 0,
-                    total: 10
-                }
-            }
-        },
-        computed: {
-            scrollViewOpts() {
-                return {
-                    damping: 0.25,
-                    alwaysShowTracks: true
-                }
-            },
-            scrollViewPlugins() {
-                return [OverScrollPlugin]
-            }
-        },
-        methods: {
-            async onInfinite($state) {
-                try {
-                    let response = await this.getData();
-                    this.list = [...this.list, ...response];
-
-                    if (this.meta.page < this.meta.total) {
-                        this.$nextTick(() => $state.loaded())
-                    } else {
-                        this.$nextTick(() => $state.completed())
-                    }
-                } catch (errors) {
-                    $state.completed();
-                    console.error(errors);
-                }
-            },
-
-            getData() {
-                return new Promise(resolve => {
-                    this.loading = true;
-
-                    setTimeout(() => {
-                        let lastItemId = this.list.length;
-                        let data = [...Array(10)];
-
-                        data = data.map((item, index) => {
-                            return {
-                                id: lastItemId + ++index
-                            }
-                        });
-
-                        this.meta.page = ++this.meta.page;
-                        this.loading = false;
-                        resolve(data)
-                    }, 500)
-                })
-            },
-        }
+export default {
+  name: 'App',
+  components: {
+    ScrollView
+  },
+  data () {
+    return {
+      list: [],
+      loading: false,
+      meta: {
+        page: 0,
+        total: 10
+      }
     }
+  },
+  computed: {
+    scrollViewOpts () {
+      return {
+        damping: 0.25,
+        alwaysShowTracks: true
+      }
+    },
+    scrollViewPlugins () {
+      return [OverScrollPlugin]
+    }
+  },
+  methods: {
+    async onInfinite ($state) {
+      try {
+        let response = await this.getData()
+        this.list = [...this.list, ...response]
+
+        if (this.meta.page < this.meta.total) {
+          this.$nextTick(() => $state.loaded())
+        } else {
+          this.$nextTick(() => $state.completed())
+        }
+      } catch (errors) {
+        $state.completed()
+        console.error(errors)
+      }
+    },
+
+    getData () {
+      return new Promise(resolve => {
+        this.loading = true
+
+        setTimeout(() => {
+          let lastItemId = this.list.length
+          let data = [...Array(10)]
+
+          data = data.map((item, index) => {
+            return {
+              id: lastItemId + ++index
+            }
+          })
+
+          this.meta.page = ++this.meta.page
+          this.loading = false
+          resolve(data)
+        }, 500)
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss">
